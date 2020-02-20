@@ -4,12 +4,15 @@
 
     $usuario = new User;
     $jwt = new Autenticador;
-    
+
+    //Recebe dados do usuário
     $usuario->setNome($_POST['nome']);
     $usuario->setEmail($_POST['email']);
     $nameUser = $usuario->getNome();
     $emailUser = $usuario->getEmail();
     
+    //Começa configuração do Token
+    //Tipo de criptografia (primeira parte)
     $header = [
         'alg' => 'HS256',
         'typ' => 'JWT'
@@ -21,6 +24,7 @@
     $jwt->setHeader($header);    
     $userHeader=$jwt->getHeader();
     
+    //Corpo do Token(criptografa dados do usuário)
     $payload = [
         'iss' => 'localhost/Testeclass/',
         'user' => $nameUser,
@@ -33,7 +37,7 @@
     $jwt->setPayload($payload);    
     $userPayload=$jwt->getPayload();
     
-    
+    //Última parte(Assinatura do Token)
     $signature = hash_hmac('sha256',"$header.$payload",'password',true);
     $signature = base64_encode($signature);
 
@@ -41,10 +45,8 @@
     $userSignature=$jwt->getSignature();   
    
     
-    /*echo "$userHeader";
-    echo "$userPayload";
-    echo "$userSignature";
-    */
+    
+    //Teste de validação
     $valid = hash_hmac('sha256',"$userHeader.$userPayload",'password',true);
     $valid = base64_encode($valid);
     
